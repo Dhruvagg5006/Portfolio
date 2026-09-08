@@ -4,48 +4,79 @@ import gsap from "gsap";
 
 const Cursor = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    // Only run custom cursor on fine pointer devices (desktop/mouse)
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
     let hover = false;
-    const cursor = cursorRef.current!;
-    const mousePos = { x: 0, y: 0 };
-    const cursorPos = { x: 0, y: 0 };
-    document.addEventListener("mousemove", (e) => {
+    let animId: number;
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+
+    const setX = gsap.quickSetter(cursor, "x", "px");
+    const setY = gsap.quickSetter(cursor, "y", "px");
+
+    const mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const cursorPos = { x: mousePos.x, y: mousePos.y };
+
+    const onMouseMove = (e: MouseEvent) => {
       mousePos.x = e.clientX;
       mousePos.y = e.clientY;
-    });
-    requestAnimationFrame(function loop() {
+    };
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+
+    function loop() {
       if (!hover) {
-        const delay = 6;
+        const delay = 5;
         cursorPos.x += (mousePos.x - cursorPos.x) / delay;
         cursorPos.y += (mousePos.y - cursorPos.y) / delay;
-        gsap.to(cursor, { x: cursorPos.x, y: cursorPos.y, duration: 0.1 });
-        // cursor.style.transform = `translate(${cursorPos.x}px, ${cursorPos.y}px)`;
+        setX(cursorPos.x);
+        setY(cursorPos.y);
       }
-      requestAnimationFrame(loop);
-    });
-    document.querySelectorAll("[data-cursor]").forEach((item) => {
+      animId = requestAnimationFrame(loop);
+    }
+    animId = requestAnimationFrame(loop);
+
+    const interactiveItems = document.querySelectorAll("[data-cursor]");
+    const mouseOverHandlers: Array<{ elem: HTMLElement; fn: (e: MouseEvent) => void }> = [];
+    const mouseOutHandlers: Array<{ elem: HTMLElement; fn: () => void }> = [];
+
+    interactiveItems.forEach((item) => {
       const element = item as HTMLElement;
-      element.addEventListener("mouseover", (e: MouseEvent) => {
+      const overHandler = (e: MouseEvent) => {
         const target = e.currentTarget as HTMLElement;
         const rect = target.getBoundingClientRect();
 
         if (element.dataset.cursor === "icons") {
           cursor.classList.add("cursor-icons");
-
-          gsap.to(cursor, { x: rect.left, y: rect.top, duration: 0.1 });
-          //   cursor.style.transform = `translate(${rect.left}px,${rect.top}px)`;
+          setX(rect.left);
+          setY(rect.top);
           cursor.style.setProperty("--cursorH", `${rect.height}px`);
           hover = true;
         }
         if (element.dataset.cursor === "disable") {
           cursor.classList.add("cursor-disable");
         }
-      });
-      element.addEventListener("mouseout", () => {
+      };
+
+      const outHandler = () => {
         cursor.classList.remove("cursor-disable", "cursor-icons");
         hover = false;
-      });
+      };
+
+      element.addEventListener("mouseover", overHandler);
+      element.addEventListener("mouseout", outHandler);
+      mouseOverHandlers.push({ elem: element, fn: overHandler });
+      mouseOutHandlers.push({ elem: element, fn: outHandler });
     });
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("mousemove", onMouseMove);
+      mouseOverHandlers.forEach(({ elem, fn }) => elem.removeEventListener("mouseover", fn));
+      mouseOutHandlers.forEach(({ elem, fn }) => elem.removeEventListener("mouseout", fn));
+    };
   }, []);
 
   return <div className="cursor-main" ref={cursorRef}></div>;

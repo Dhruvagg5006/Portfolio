@@ -214,3 +214,29 @@
     justify-content: left;
   }
 }
+
+.career-cert-link {
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(170, 66, 255, 0.15);
+  border: 1px solid rgba(170, 66, 255, 0.35);
+  color: #e2bbfd;
+  text-decoration: none;
+  vertical-align: middle;
+  transition: all 0.25s ease;
+}
+
+.career-cert-link:hover {
+  background: rgba(170, 66, 255, 0.35);
+  color: #ffffff;
+  border-color: rgba(170, 66, 255, 0.7);
+  box-shadow: 0 0 12px rgba(170, 66, 255, 0.3);
+  transform: translateY(-1px);
+}
+

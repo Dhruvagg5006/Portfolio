@@ -6,9 +6,7 @@ const About = () => {
       <div className="about-me">
         <h3 className="title">About Me</h3>
         <p className="para">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic quis
-          dolores numquam iusto Ratione earum ducimus autem id iure pariatur
-          dolorum quae maiores.
+          I am a Computer Science & Engineering undergraduate at KIET Group of Institutions with an 8.79 CGPA. Passionate about machine learning, data analytics, and modern full-stack development, I build production-ready platforms and predictive AI systems that turn complex data into actionable solutions.
         </p>
       </div>
     </div>
