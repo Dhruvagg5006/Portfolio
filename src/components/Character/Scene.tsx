@@ -23,7 +23,7 @@ const Scene = () => {
 
     let isMounted = true;
     let characterObj: THREE.Object3D | null = null;
-    let introTimeout: NodeJS.Timeout | undefined;
+    let introTimeout: number | undefined;
 
     let rect = canvasDiv.current.getBoundingClientRect();
     let container = { width: rect.width, height: rect.height };
@@ -111,7 +111,7 @@ const Scene = () => {
     const onMouseMove = (event: MouseEvent) => {
       handleMouseMove(event, (x, y) => (mouse = { x, y }));
     };
-    let debounce: NodeJS.Timeout | undefined;
+    let debounce: number | undefined;
     const onTouchStart = (event: TouchEvent) => {
       const element = event.target as HTMLElement;
       debounce = setTimeout(() => {
